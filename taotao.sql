@@ -1,0 +1,1 @@
+SELECT param_data FROM tb_item_param WHERE id=1;
