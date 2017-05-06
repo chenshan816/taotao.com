@@ -30,6 +30,8 @@
 		<commons-fileupload.version>1.3.1</commons-fileupload.version>
 		<jedis.version>2.7.2</jedis.version>
 		<solrj.version>4.10.3</solrj.version>
+		<activemqAll.version>5.13.0</activemqAll.version>
+		<activemqPool.version>5.13.0</activemqPool.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -139,6 +141,11 @@
 				<artifactId>spring-aspects</artifactId>
 				<version>${spring.version}</version>
 			</dependency>
+			 <dependency>  
+	            <groupId>org.springframework</groupId>  
+	            <artifactId>spring-jms</artifactId>  
+	            <version>${spring.version}</version>  
+        	</dependency> 
 			<!-- JSP相关 -->
 			<dependency>
 				<groupId>jstl</groupId>
@@ -175,6 +182,17 @@
 				<artifactId>solr-solrj</artifactId>
 				<version>${solrj.version}</version>
 			</dependency>
+			<!-- ActiveMq 工具组件 -->
+			<dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-all</artifactId>
+            <version>${activemqAll.version}</version>
+	        </dependency>
+	        <dependency>
+	            <groupId>org.apache.activemq</groupId>
+	            <artifactId>activemq-pool</artifactId>
+	            <version>${activemqPool.version}</version>
+	        </dependency>
 		</dependencies>
 	</dependencyManagement>
 
