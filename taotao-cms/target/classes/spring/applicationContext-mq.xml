@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- ActiveMQ配置 -->
+	<!-- 工厂 原厂提供 -->
+	<bean id="activeMQConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<!-- 设置连接 -->
+		<property name="brokerURL" value="tcp://192.168.27.130:61616"/>
+		<!-- 用户名 -->
+		<property name="userName" value="admin"/>
+		<!-- 密码 -->
+		<property name="password" value="admin"/>
+	</bean>
+	<!-- 工厂连接池 原厂提供 -->
+	<bean id="pooledConnectionFactoryBean" class="org.apache.activemq.pool.PooledConnectionFactoryBean">
+		<!-- 连接工厂 -->
+		<property name="connectionFactory" ref="activeMQConnectionFactory"/>
+		<property name="maxConnections" value="2"/>
+	</bean>
+	
+	<!-- spring管理连接池 -->
+	<bean id="connectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">
+		<!-- 注入MQ工程 -->
+		<property name="targetConnectionFactory" ref="pooledConnectionFactoryBean"/>
+	</bean>
+	
+	<!-- 处理消息类 -->
+	<bean id="customMessageListener" class="com.taotao.cms.message.CustomMessageListener"></bean>
+	
+	<!-- 使用监听器监听ActiveMq -->
+	<bean class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<!-- 连接连接池 -->
+		<property name="connectionFactory" ref = "connectionFactory"></property>
+		<!-- 监听管道 -->
+		<property name="destinationName" value="itemId"></property>
+		<!-- 消息处理类 -->
+		<property name="messageListener" ref="customMessageListener"></property>
+		<!-- 默认模式：点对点(false) 或者 订阅模式(true) publish/subject -->
+		<property name="pubSubDomain" value = "true"></property>
+	</bean>
+	
+		<!-- JmsTemplate 由Spring提供 -->
+	<!-- <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="connectionFactory"/>
+		目标对象
+		<property name="defaultDestinationName" value="itemId"></property>
+	</bean> -->
+	
+</beans>

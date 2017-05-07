@@ -35,6 +35,8 @@
 		<property name="connectionFactory" ref="connectionFactory"/>
 		<!-- 目标对象 -->
 		<property name="defaultDestinationName" value="itemId"></property>
+		<!-- 默认模式：点对点(false) 或者 订阅模式(true) publish/subject -->
+		<property name="pubSubDomain" value = "true"></property>
 	</bean>
 	
 </beans>

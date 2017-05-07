@@ -4,8 +4,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 
 import com.github.pagehelper.PageHelper;
@@ -43,6 +49,9 @@ public class ItemServiceImpl implements ItemService {
 	private String SEARCH_BASE_URL;
 	@Value("${SEARCH_IMPORT_URL}")
 	private String SEARCH_IMPORT_URL;
+	//消息队列ActiveMQ
+	@Autowired
+	private JmsTemplate jmsTemplate;
 	
 	@Override
 	public TbItem getItemById(long itemId) {
@@ -86,6 +95,8 @@ public class ItemServiceImpl implements ItemService {
 		insertItemDesc(desc,item.getId());
 		//添加商品规格参数
 		insertItemParamItem(paramData,item.getId());
+		//通知消息队列
+		sendToActiveMq(item.getId());
 		return TaotaoResult.ok(itemId);
 	}
 	/**
@@ -141,6 +152,7 @@ public class ItemServiceImpl implements ItemService {
 		updateItemDesc(desc,item.getId());
 		//更改规格参数
 		UpdateItemParamItem(paramData,item.getId());
+		sendToActiveMq(item.getId());
 		return TaotaoResult.ok();
 	}
 	private TaotaoResult UpdateItemParamItem(String paramData, Long itemId) {
@@ -183,5 +195,22 @@ public class ItemServiceImpl implements ItemService {
 			return TaotaoResult.build(500,ExceptionUtil.getStackTrace(e));
 		}
 	}
-
+	/**
+	 * 使用ActiveMQ更新
+	 */
+	public TaotaoResult sendToActiveMq(final long itemId){
+		try{
+			jmsTemplate.send(new MessageCreator() {
+				
+				@Override
+				public Message createMessage(Session session) throws JMSException {
+					return session.createTextMessage(String.valueOf(itemId));
+				}
+			});
+			return TaotaoResult.ok();
+		}catch(Exception e){
+			e.printStackTrace();
+			return TaotaoResult.build(500,ExceptionUtil.getStackTrace(e));
+		}
+	}
 }

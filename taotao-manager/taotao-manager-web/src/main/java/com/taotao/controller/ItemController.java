@@ -45,7 +45,7 @@ public class ItemController {
 	@ResponseBody
 	public TaotaoResult itemSave(TbItem item,String desc,String itemParams){
 		TaotaoResult result = itemService.createItem(item,desc,itemParams);
-		itemService.updateSolrService((long)result.getData());
+		//itemService.updateSolrService((long)result.getData());
 		return result;
 	}
 	/**
@@ -63,7 +63,7 @@ public class ItemController {
 	@ResponseBody
 	public TaotaoResult itemUpdate(TbItem item,String desc,String paramData){
 		TaotaoResult result = itemService.updateItem(item,desc,paramData);
-		itemService.updateSolrService(item.getId());
+		//itemService.updateSolrService(item.getId());
 		return result;
 	}
 }
