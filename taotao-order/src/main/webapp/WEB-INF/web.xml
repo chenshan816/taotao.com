@@ -46,6 +46,6 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>taotao-order</servlet-name>
-		<url-pattern>/order/*</url-pattern>
+		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 </web-app>

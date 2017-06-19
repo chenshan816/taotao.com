@@ -63,4 +63,23 @@
 		   LEFT JOIN tb_order_shipping c ON a.order_id = c.order_id
 		   WHERE a.user_id = #{user_id}
 	</select>
+	<!--
+	<mapper namespace="com.kerwin.mybatis.pojo.Person">  
+    <resultMap type="com.kerwin.mybatis.pojo.Person" id="personreSultMap">  
+        <id column="p_id" property="id"/>  
+        <result column="name" property="name"/>  
+        <collection property="orderList" ofType="com.kerwin.mybatis.pojo.Orders" column="pid">  
+            <id column="o_id" property="id"/>  
+            <result column="price" property="price"/>  
+        </collection>  
+          
+    </resultMap>  
+      
+    <select id="selectPersonFetchOrder" parameterType="int" resultMap="personreSultMap" >  
+        select p.*,o.* from person p,orders o where o.pid=p.p_id and p.p_id=#{id}  
+    </select>  
+      
+      
+</mapper>  
+	-->
 </mapper>

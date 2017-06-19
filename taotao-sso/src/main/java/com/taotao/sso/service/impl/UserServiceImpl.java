@@ -1,22 +1,32 @@
 package com.taotao.sso.service.impl;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import com.taotao.common.Utils.CookieUtils;
+import com.taotao.common.Utils.ExceptionUtil;
 import com.taotao.common.Utils.JsonUtils;
 import com.taotao.common.pojo.TaotaoResult;
 import com.taotao.mapper.TbUserMapper;
+import com.taotao.pojo.CartInfo;
+import com.taotao.pojo.TbCart;
 import com.taotao.pojo.TbUser;
 import com.taotao.pojo.TbUserExample;
 import com.taotao.pojo.TbUserExample.Criteria;
@@ -40,6 +50,10 @@ public class UserServiceImpl implements UserService {
 	private String REDIS_USER_SESSION_KEY;
 	@Value("${SSO_SESSION_EXPIRE}")
 	private Integer SSO_SESSION_EXPIRE;
+	
+	//activeMq对象
+	@Autowired
+	private JmsTemplate jmsTemplate;
 	
 	//校验数据的常量
 	private int CHECK_USERNAME = 1;
@@ -89,7 +103,8 @@ public class UserServiceImpl implements UserService {
 	 * 用户登录
 	 */
 	@Override
-	public TaotaoResult userLogin(String username, String password,HttpServletRequest request,HttpServletResponse response) {
+	public TaotaoResult userLogin(String username, String password,
+			HttpServletRequest request,HttpServletResponse response) {
 		//查询用户信息
 		TbUserExample example = new TbUserExample();
 		Criteria criteria = example.createCriteria();
@@ -113,6 +128,11 @@ public class UserServiceImpl implements UserService {
 		jedisClient.expire(REDIS_USER_SESSION_KEY+":"+token, SSO_SESSION_EXPIRE);
 		//在cookie中添加令牌
 		CookieUtils.setCookie(request, response, "TT_TOKEN", token);
+		//在activeMQ中添加，保存购物车至数据库
+		//1.获取cookie中的购物车信息
+		List<TbCart> cartItemList = getCartItemList(request);
+		CartInfo cartInfo = new CartInfo(user, cartItemList);
+		sendToActiveMq(cartInfo);
 		//返回token
 		return TaotaoResult.ok(token);
 	}
@@ -143,4 +163,36 @@ public class UserServiceImpl implements UserService {
 		jedisClient.del(REDIS_USER_SESSION_KEY+":"+token);
 		return TaotaoResult.ok();
 	}
+	
+	/**
+	 * 使用ActiveMQ更新
+	 */
+	public void sendToActiveMq(final CartInfo cartInfo){
+		try{
+			jmsTemplate.send(new MessageCreator() {
+				@Override
+				public Message createMessage(Session session) throws JMSException {
+					return session.createObjectMessage(cartInfo);
+				}
+			});
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 获取cookie中购物车的商品列表
+	 */
+	private List<TbCart> getCartItemList(HttpServletRequest request) {
+		String cartJson = CookieUtils.getCookieValue(request, "TT_CART", true);
+		List<TbCart> list = null;
+		if (StringUtils.isBlank(cartJson)) {
+			list = new ArrayList<TbCart>();
+		} else {
+			// 将json数据转换为列表
+			list = JsonUtils.jsonToList(cartJson, TbCart.class);
+		}
+		return list;
+	}
+
 }

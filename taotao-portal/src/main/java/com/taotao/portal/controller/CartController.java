@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.taotao.portal.pojo.CartItem;
+import com.taotao.pojo.TbCart;
 import com.taotao.portal.service.CartService;
 
 /**
@@ -40,7 +40,7 @@ public class CartController {
 	
 	@RequestMapping("/cart")
 	public String showPage(HttpServletRequest request,HttpServletResponse response,Model model){
-		List<CartItem> cartItemList = cartService.getCartItemList(request, response);
+		List<TbCart> cartItemList = cartService.getCartItemList(request);
 		model.addAttribute("cartList", cartItemList);
 		return "cart";
 	}

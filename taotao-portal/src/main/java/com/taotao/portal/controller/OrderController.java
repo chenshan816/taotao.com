@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.taotao.common.Utils.ExceptionUtil;
-import com.taotao.portal.pojo.CartItem;
+import com.taotao.pojo.TbCart;
 import com.taotao.portal.pojo.Order;
 import com.taotao.portal.service.CartService;
 import com.taotao.portal.service.OrderService;
@@ -36,7 +35,7 @@ public class OrderController {
 	@RequestMapping("/order-cart")
 	public String showOrderCart(HttpServletRequest request,HttpServletResponse response,Model model){
 		//获取购物车商品列表
-		List<CartItem> cartList = cartService.getCartItemList(request, response);
+		List<TbCart> cartList = cartService.getCartItemList(request);
 		//传递给页面
 		model.addAttribute("cartList", cartList);
 		return "order-cart";

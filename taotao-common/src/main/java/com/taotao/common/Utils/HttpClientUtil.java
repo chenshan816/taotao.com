@@ -115,6 +115,7 @@ public class HttpClientUtil {
 			HttpPost httpPost = new HttpPost(url);
 			// 创建请求内容
 			StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
+			entity.setContentType("application/json");
 			httpPost.setEntity(entity);
 			// 执行http请求
 			response = httpClient.execute(httpPost);

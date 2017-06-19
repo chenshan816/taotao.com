@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.taotao.common.pojo.TaotaoResult;
+import com.taotao.pojo.CartInfo;
 import com.taotao.pojo.TbUser;
 
 public interface UserService {

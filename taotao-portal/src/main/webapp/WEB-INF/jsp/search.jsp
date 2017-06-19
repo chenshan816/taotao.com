@@ -48,7 +48,7 @@
 		</a>
 	</div>
 	<div class="p-name">
-		<a target="_blank" href="http://localhost:8001/html/item/${item.id}.html">
+		<a target="_blank" href="/item/${item.id }.html">
 			${item.title}
 		</a>
 	</div>

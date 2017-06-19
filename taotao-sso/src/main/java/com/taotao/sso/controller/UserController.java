@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.sun.jdi.Method;
 import com.taotao.common.Utils.ExceptionUtil;
 import com.taotao.common.pojo.TaotaoResult;
+import com.taotao.pojo.CartInfo;
 import com.taotao.pojo.TbUser;
 import com.taotao.sso.service.UserService;
 

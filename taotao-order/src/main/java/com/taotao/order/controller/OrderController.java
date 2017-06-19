@@ -21,6 +21,7 @@ import com.taotao.pojo.TbOrder;
  *
  */
 @Controller
+@RequestMapping("/order")
 public class OrderController {
 	@Autowired
 	private OrderService orderService;

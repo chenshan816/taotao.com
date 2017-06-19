@@ -10,6 +10,8 @@ public class Order extends TbOrder {
 	
 	private List<TbOrderItem> orderItems;
 	private TbOrderShipping orderShipping;
+	
+	
 	public List<TbOrderItem> getOrderItems() {
 		return orderItems;
 	}
