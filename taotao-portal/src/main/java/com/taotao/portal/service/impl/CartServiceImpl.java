@@ -47,10 +47,12 @@ public class CartServiceImpl implements CartService {
 		// 调用taotao-order服务
 		String json = "";
 		if (2 == type) {
-			json = HttpClientUtil.doPostJson(ORDER_BASE_URL + CART_INFO_LIST+ "update/" + itemId + "/" + num,
+			json = HttpClientUtil.doPostJson(ORDER_BASE_URL + CART_INFO_LIST
+					+ "update/" + itemId + "/" + num,
 					JsonUtils.objectToJson(cartInfo));
 		} else if (1 == type) {
-			json = HttpClientUtil.doPostJson(ORDER_BASE_URL + CART_INFO_LIST+ "add/" + itemId, JsonUtils.objectToJson(cartInfo));
+			json = HttpClientUtil.doPostJson(ORDER_BASE_URL + CART_INFO_LIST
+					+ "add/" + itemId+"/"+num, JsonUtils.objectToJson(cartInfo));
 		}
 		// 将json转换为taotao-result
 		TaotaoResult result = TaotaoResult.formatToPojo(json, CartInfo.class);
@@ -60,7 +62,7 @@ public class CartServiceImpl implements CartService {
 				cartInfo = (CartInfo) result.getData();
 				CookieUtils.setCookie(request, response, "TT_CART", JsonUtils
 						.objectToJson(cartInfo.getCookieCartItemList()), true);
-			}else{
+			} else {
 				CookieUtils.deleteCookie(request, response, "TT_CART");
 			}
 
@@ -76,7 +78,21 @@ public class CartServiceImpl implements CartService {
 			HttpServletResponse response) {
 		CartInfo cartInfo = getCartInfo(request);
 		// 调用taotao-order服务
-		HttpClientUtil.doPostJson(ORDER_BASE_URL + CART_INFO_LIST + "delete/"+ itemId, JsonUtils.objectToJson(cartInfo));
+		String json = HttpClientUtil.doPostJson(ORDER_BASE_URL + CART_INFO_LIST
+				+ "delete/" + itemId, JsonUtils.objectToJson(cartInfo));
+		// 将json转换为taotao-result
+		TaotaoResult result = TaotaoResult.formatToPojo(json, CartInfo.class);
+		// 如果没有登录则需要重新将信息重新放入cookie中
+		if (result.getStatus() == 200) {
+			if (cartInfo.getUser() == null) {
+				cartInfo = (CartInfo) result.getData();
+				CookieUtils.setCookie(request, response, "TT_CART", JsonUtils
+						.objectToJson(cartInfo.getCookieCartItemList()), true);
+			} else {
+				CookieUtils.deleteCookie(request, response, "TT_CART");
+			}
+
+		}
 	}
 
 	@Override
@@ -99,14 +115,17 @@ public class CartServiceImpl implements CartService {
 		}
 		return list;
 	}
+
 	/**
 	 * 从数据库获取数据
+	 * 
 	 * @param request
 	 * @return
 	 */
-	private List<TbCart> getCartItemList(CartInfo cartInfo){
+	private List<TbCart> getCartItemList(CartInfo cartInfo) {
 		// 调用taotao-order服务
-		String json = HttpClientUtil.doPostJson(ORDER_BASE_URL+CART_INFO_LIST+ "cart", JsonUtils.objectToJson(cartInfo));
+		String json = HttpClientUtil.doPostJson(ORDER_BASE_URL + CART_INFO_LIST
+				+ "cart", JsonUtils.objectToJson(cartInfo));
 		// 将json转换为taotao-result
 		TaotaoResult result = TaotaoResult.formatToList(json, TbCart.class);
 		return (List<TbCart>) result.getData();
@@ -118,12 +137,12 @@ public class CartServiceImpl implements CartService {
 		// 2.根据token换取用户信息，调用sso系统接口
 		TbUser userInfo = userService.getUserInfoByToken(token);
 		List<TbCart> cartItemList = null;
-		if(userInfo == null){
+		if (userInfo == null) {
 			// 获取Cookie中的信息
 			cartItemList = getCookieCartItemList(request);
-		}else{
-			//从数据库获取
-			cartItemList = getCartItemList(new CartInfo(userInfo,null));
+		} else {
+			// 从数据库获取
+			cartItemList = getCartItemList(new CartInfo(userInfo, null));
 		}
 		// 封装一个对象进行转发
 		CartInfo cartInfo = new CartInfo(userInfo, cartItemList);

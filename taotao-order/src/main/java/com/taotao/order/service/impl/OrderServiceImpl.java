@@ -93,7 +93,7 @@ public class OrderServiceImpl implements OrderService {
 		orderShipping.setCreated(new Date());
 		orderShipping.setUpdated(new Date());
 		orderShippingMapper.insert(orderShipping);
-		return TaotaoResult.ok(orderId);
+		return TaotaoResult.ok(orderId+"");
 	}
 	/**
 	 * 根据订单号查询商品订单

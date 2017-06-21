@@ -8,7 +8,7 @@ import com.taotao.portal.pojo.Order;
 
 public interface OrderService {
 	
-	String creareOrder(Order order,HttpServletRequest request);
+	String[] creareOrder(Order order,HttpServletRequest request);
 	
 	List<Order> getOrderByUserID(HttpServletRequest request);
 }

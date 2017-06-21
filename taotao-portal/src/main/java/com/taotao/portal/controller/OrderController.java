@@ -1,5 +1,6 @@
 package com.taotao.portal.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,12 +45,17 @@ public class OrderController {
 	@RequestMapping(value="/create",method=RequestMethod.POST)
 	public String createOrder(Order order,HttpServletRequest request,Model model){
 		try {
-			String orderId = orderService.creareOrder(order,request);
+			String[] res = orderService.creareOrder(order,request);
+			//将orderId保存到pay页面中
+			String orderId = res[0];
+			//付款码的展示
+			String qrUrl = res[1];
 			//信息回显
 			model.addAttribute("orderId", orderId);
 			model.addAttribute("payment", order.getPayment());
+			model.addAttribute("qrUrl", qrUrl);
 			model.addAttribute("date", new DateTime().plusDays(3).toString("yyyy-MM-dd"));
-			return "success";
+			return "pay";
 		} catch (Exception e) {
 			e.printStackTrace();
 			model.addAttribute("message", "订单生成出错，请稍后重试");

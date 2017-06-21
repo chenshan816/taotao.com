@@ -120,8 +120,9 @@ public class CartServiceImpl implements CartService {
 					break;
 				}
 			}
+			cartInfo.setCookieCartItemList(cartItemlist);
 		}
-		return TaotaoResult.ok();
+		return TaotaoResult.ok(cartInfo);
 	}
 
 	@Override
@@ -136,6 +137,25 @@ public class CartServiceImpl implements CartService {
 			list = cartMapper.selectByExample(example);
 		}
 		return TaotaoResult.ok(list);
+	}
+
+	@Override
+	public TaotaoResult deleteCartItemByOrder(Long userId, List<TbCart> itemList) {
+		//根据订单号删除购物车的商品
+		if(userId == null){
+			return TaotaoResult.build(400, "未登录不能删除");
+		}
+		if(itemList != null && itemList.size() > 0){
+			for(int i=0;i<itemList.size();i++){
+				TbCartExample example = new TbCartExample();
+				Criteria criteria = example.createCriteria();
+				criteria.andUserIdEqualTo(userId);
+				criteria.andIdEqualTo(itemList.get(i).getId());
+				cartMapper.deleteByExample(example);
+			}
+			return TaotaoResult.ok();
+		}
+		return TaotaoResult.build(400, "无删除信息或信息不匹配");
 	}
 
 }
